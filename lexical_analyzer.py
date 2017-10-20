@@ -138,11 +138,11 @@ t_ignore = ' \t'
 
 # Error handling rule
 def t_error(t):
-    print('Illegal character{0} line:{1}'.format(t.value[0], t.lexer.lineno))
+    #print('Illegal character{0} line:{1}'.format(t.value[0], t.lexer.lineno))
     t.lexer.skip(1)
 
 
-class myWindow(Tk):
+class Mywindow(Tk):
 
     def __init__(self):
         super().__init__()
@@ -175,7 +175,6 @@ class myWindow(Tk):
                 new_content = ''.join(new_lines)  # 去掉了多行注释的源程序
                 self.text2.insert(1.0, new_content)
                 self.lexer.input(new_content)
-                print('(类型 , 单词符号):')
                 result = ''
                 while True:
                     tok = self.lexer.token()
@@ -184,31 +183,38 @@ class myWindow(Tk):
                     outputStr = '({} , {})'.format(tok.type, tok.value)
                     result += outputStr + '\n'
                 self.textvar.set(result)
-                self.text1.insert(1.0, self.textvar.get())
+                self.text1.insert(1.0, '(类型 , 单词符号):\n' + self.textvar.get())
         except:
             tkinter.messagebox.showwarning(title='Warning', message='出错了!')
 
     def openfile(self):
         filepath = tkinter.filedialog.askopenfilename()
+        if filepath != '':
+            self.text1.delete(1.0, END)
+            self.text2.delete(1.0, END)
+            self.lexical_analyze(filepath)
+
+
+    def clear(self):
         self.text1.delete(1.0, END)
         self.text2.delete(1.0, END)
-        self.lexical_analyze(filepath)
 
     def setUI(self):
         self.menu = Menu(self)
         self.menu.add_command(label='Open', command=self.openfile)
-        self.menu.add_command(label='quit', command=self.quit)
+        self.menu.add_command(label='Clear', command=self.clear)
+        self.menu.add_command(label='Quit', command=self.quit)
         self.config(menu=self.menu)
         self.title('词法分析器')
         self.geometry('500x600')
-        self.topLabel = Label(self, text='Output')
+        self.topLabel = Label(self, text='Output', fg='blue')
         self.topLabel.pack(side=TOP)
         self.verticalscrollbar = Scrollbar(self, orient = VERTICAL)
         self.text1 = Text(self, width=200, height=20, yscrollcommand=self.verticalscrollbar.set)
         self.verticalscrollbar.config(command = self.text1.yview)
         self.verticalscrollbar.pack(fill = 'y', side = RIGHT, anchor = N)
         self.text1.pack()
-        self.codelabel = Label(self, text='Code')
+        self.codelabel = Label(self, text='Code', fg='blue')
         self.codelabel.pack()
         self.text2 = Text(self, width=200, height=30)
         self.text2.pack()
@@ -217,4 +223,4 @@ class myWindow(Tk):
 
 
 if __name__ == '__main__':
-    window = myWindow()
+    window = Mywindow()
